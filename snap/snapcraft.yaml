@@ -121,3 +121,7 @@ plugs:
   desktop-launch:
   opengl:
   network-bind:
+
+architectures:
+  - build-on: amd64
+  - build-on: i386

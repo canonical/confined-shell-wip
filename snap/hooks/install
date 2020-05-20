@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 snap_core=$(sed -n 's/.*snap_core=\([^ ]*\).*/\1/p' /proc/cmdline)
 

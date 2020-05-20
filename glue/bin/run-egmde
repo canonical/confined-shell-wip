@@ -5,7 +5,7 @@ if [ $(id -u) != 0 ] && [ ! -v DISPLAY ] && [ ! -e $SNAP_COMMON/login-session-co
   echo "ERROR: You need one of: root, a DISPLAY, or to connect the login-session-control interface."
   echo ""
   echo "To connect the login-session-control and desktop-launch interfaces and add to the login menu:"
-  echo "  /snap/egmde-confined-desktop/current/bin/setup.sh"
+  echo "  /snap/confined-shell/current/bin/setup.sh"
   exit 1
 fi
 
@@ -13,7 +13,7 @@ if [ ! -e $SNAP_COMMON/desktop-launch.connected ]; then
   echo "ERROR: You need to connect the desktop-launch interface."
   echo ""
   echo "To connect the login-session-control and desktop-launch interfaces and add to the login menu:"
-  echo "  /snap/egmde-confined-desktop/current/bin/setup.sh"
+  echo "  /snap/confined-shell/current/bin/setup.sh"
   exit 1
 fi
 

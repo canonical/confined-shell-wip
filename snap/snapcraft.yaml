@@ -1,7 +1,7 @@
-name: egmde-confined-desktop
+name: confined-shell
 adopt-info: egmde
-summary: A minimal Mir based desktop with some test applications
-description: A minimal Mir based desktop with some test applications for demonstration purposes.
+summary: A minimal Mir based confined shell for testing support for such things
+description: A minimal Mir based confined shell for testing support for such things
 confinement: strict
 grade: devel
 base: core18
@@ -9,8 +9,6 @@ base: core18
 environment:
   SHELL: bash
   LC_ALL: C.UTF-8
-  LD_LIBRARY_PATH: ${LD_LIBRARY_PATH}:${SNAP}/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/pulseaudio:${SNAP}/usr/lib/libreoffice/program/:${SNAP}/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/samba
-  PATH: $SNAP/bin/:$SNAP/usr/bin/:${SNAP}/usr/games:${PATH}
   # XDG config
   XDG_CACHE_HOME:  $SNAP_USER_COMMON/.cache
   XDG_DATA_DIRS:   $SNAP/usr/share
@@ -33,13 +31,11 @@ layout:
     bind: $SNAP/etc/fonts
   /usr/share/fonts:
     bind: $SNAP/usr/share/fonts
-  /usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/mir:
-    bind: $SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/mir
 
 apps:
-  egmde-confined-desktop:
+  confined-shell:
     command: bin/run-egmde
-    desktop: usr/share/wayland-sessions/egmde-confined-desktop.desktop
+    desktop: usr/share/wayland-sessions/confined-shell.desktop
     slots:
       - wayland
     plugs:

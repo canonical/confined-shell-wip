@@ -122,6 +122,11 @@ plugs:
   opengl:
   network-bind:
 
+slots:
+  x11-server:
+    interface: x11
+
+
 architectures:
   - build-on: amd64
   - build-on: i386

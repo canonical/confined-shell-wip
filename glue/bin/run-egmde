@@ -40,5 +40,6 @@ touch /tmp/.X11-unix/X4
 set -e
 
 cd $HOME
+export MIR_SERVER_ENABLE_X11=
 exec $SNAP/bin/egmde $@
 

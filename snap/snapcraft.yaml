@@ -69,13 +69,14 @@ parts:
     ppa: mir-team/dev
     source: egmde
     build-packages:
-    - pkg-config
-    - libmiral-dev
-    - libboost-filesystem-dev
-    - libfreetype6-dev
-    - libwayland-dev
-    - libxkbcommon-dev
-    - libglib2.0-dev
+      - g++
+      - pkg-config
+      - libmiral-dev
+      - libboost-filesystem-dev
+      - libfreetype6-dev
+      - libwayland-dev
+      - libxkbcommon-dev
+      - libglib2.0-dev
     stage-packages:
       - try: [libmiral4]
       - else: [libmiral3]
@@ -112,10 +113,6 @@ parts:
     - libglu1-mesa
     - libgpm2
     - libgtk3-nocsd0
-    - dbus
-    # Debugging
-    - gdb
-    - strace
 
 plugs:
   desktop-launch:
@@ -125,7 +122,6 @@ plugs:
 slots:
   x11-server:
     interface: x11
-
 
 architectures:
   - build-on: amd64

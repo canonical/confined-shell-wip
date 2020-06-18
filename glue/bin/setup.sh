@@ -1,4 +1,7 @@
-#!/usr/bin/env bash
+#!/bin/sh
+
+# To connect to the desktop
+sudo snap connect confined-shell:x11
 
 # To launch other snaps
 sudo snap connect confined-shell:desktop-launch

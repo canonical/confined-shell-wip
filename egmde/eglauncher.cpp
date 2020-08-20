@@ -649,21 +649,7 @@ void egmde::Launcher::Self::run_app(std::string app, Mode mode) const
     }
     else
     {
-        std::vector<std::string> env{
-            "XDG_SESSION_DESKTOP=mir",
-            "XDG_SESSION_TYPE=wayland"};
-
-        if (auto const& wayland_display = runner.wayland_display())
-        {
-            env.push_back("WAYLAND_DISPLAY=" + wayland_display.value());
-        }
-
-        if (auto const& x11_display = runner.x11_display())
-        {
-            env.push_back("DISPLAY=" + x11_display.value());
-        }
-
-        open_desktop_entry(current_app->desktop_file, env);
+        open_desktop_entry(current_app->desktop_file);
     }
 }
 

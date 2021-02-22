@@ -23,5 +23,6 @@ mkdir -p $XDG_CACHE_HOME
 
 cd $HOME
 unset WAYLAND_DISPLAY
-exec $SNAP/bin/egmde $@
+export EGMDE_SNAP_LAUNCH=
+exec $SNAP/usr/local/bin/egmde $@
 

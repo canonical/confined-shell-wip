@@ -22,5 +22,6 @@ mkdir -p $XDG_RUNTIME_DIR -m 700
 mkdir -p $XDG_CACHE_HOME
 
 cd $HOME
+unset WAYLAND_DISPLAY
 exec $SNAP/bin/egmde $@
 

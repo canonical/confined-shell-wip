@@ -18,6 +18,7 @@ environment:
   MIR_SERVER_PLATFORM_PATH: ${SNAP}/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/mir/server-platform
   LIBGL_DRIVERS_PATH: ${SNAP}/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/dri
   LIBVA_DRIVERS_PATH: ${SNAP}/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/dri
+  PATH: $SNAP/bin/:$SNAP/usr/bin/:${PATH}
 
 layout:
   /usr/share/X11:
@@ -37,6 +38,8 @@ layout:
 
 apps:
   confined-shell:
+    command-chain:
+      - bin/desktop-launch
     command: bin/run-egmde
     desktop: usr/share/wayland-sessions/confined-shell.desktop
     slots:
@@ -45,8 +48,8 @@ apps:
       - login-session-control
       - x11
     environment:
-      EGMDE_SNAPCRAFT_LAUNCH: 1
-      XDG_DATA_DIRS:   /var/lib/snapd/desktop
+      EGMDE_SNAP_LAUNCH: 1
+      XDG_DATA_DIRS: $SNAP/usr/share:/var/lib/snapd/desktop
 
 parts:
   recipe-version:
@@ -69,7 +72,6 @@ parts:
   egmde:
     after: [recipe-version, ppa-setup]
     source: https://github.com/AlanGriffiths/egmde.git
-    source-branch: snap_launch
     override-pull: |
       snapcraftctl pull
       server_version=`git rev-list --count HEAD`
@@ -117,10 +119,43 @@ parts:
     - libgpm2
     - libgtk3-nocsd0
 
+  terminal:
+    plugin: nil
+    stage-packages:
+      - xfce4-terminal
+    override-build: |
+      snapcraftctl build
+      rm -f $SNAPCRAFT_PART_INSTALL/usr/share/applications/exo-*
+
+  snapcraft-desktop-helpers:
+    source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
+    source-subdir: gtk
+    plugin: make
+    make-parameters: ["FLAVOR=gtk3"]
+    build-packages:
+      - build-essential
+      - libgtk-3-dev
+    override-build: |
+      snapcraftctl build
+      # desktop-launch doesn't handle running without a user session very well, this avoids slow startup here
+      sed --in-place s'/^  needs_update=true/:/' $SNAPCRAFT_PART_INSTALL/bin/desktop-launch
+
 plugs:
   desktop-launch:
   opengl:
   network-bind:
+  gtk-3-themes:
+    interface: content
+    target: $SNAP/data-dir/themes
+    default-provider: gtk-common-themes
+  icon-themes:
+    interface: content
+    target: $SNAP/data-dir/icons
+    default-provider: gtk-common-themes
+  sound-themes:
+    interface: content
+    target: $SNAP/data-dir/sounds
+    default-provider: gtk-common-themes
 
 architectures:
   - build-on: amd64

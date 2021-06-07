@@ -1,5 +1,5 @@
 [Desktop Entry]
 Name=confined-shell
 Comment=A confined Mir server
-Exec=snap run confined-shell
+Exec=confined-shell
 Type=Application

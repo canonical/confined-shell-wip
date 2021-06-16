@@ -72,6 +72,7 @@ parts:
   egmde:
     after: [recipe-version, ppa-setup]
     source: https://github.com/AlanGriffiths/egmde.git
+    source-branch: mircade
     override-pull: |
       snapcraftctl pull
       server_version=`git rev-list --count HEAD`

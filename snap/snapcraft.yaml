@@ -11,8 +11,9 @@ environment:
   LC_ALL: C.UTF-8
   PATH: $SNAP/bin/:$SNAP/usr/bin/:${PATH}
   # XDG config
-  XDG_CACHE_HOME:  $SNAP_USER_COMMON/.cache
   XDG_DATA_DIRS:   $SNAP/usr/share
+  XDG_CONFIG_DIRS: $SNAP/etc/xdg
+  XDG_CACHE_HOME:  $SNAP_USER_COMMON/.cache
   XDG_CONFIG_HOME: $SNAP_USER_DATA/.config
   # Prep for Mir
   MIR_SERVER_PLATFORM_PATH: ${SNAP}/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/mir/server-platform
@@ -21,6 +22,10 @@ environment:
   LIBGL_DRIVERS_PATH:        $SNAP/graphics/dri
   LIBVA_DRIVERS_PATH:        $SNAP/graphics/dri
   __EGL_VENDOR_LIBRARY_DIRS: $SNAP/graphics/glvnd/egl_vendor.d
+  # GDK pixbuf
+  GDK_PIXBUF_MODULEDIR:      $SNAP/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/gdk-pixbuf-2.0/2.10.0/loaders
+  GDK_PIXBUF_MODULE_FILE:    $SNAP_COMMON/loaders.cache
+  GDK_PIXBUF_QUERY_LOADERS:  $SNAP/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/gdk-pixbuf-2.0/gdk-pixbuf-query-loaders
 
 layout:
   /usr/share/X11:
@@ -37,11 +42,11 @@ layout:
     bind: $SNAP/graphics/libdrm
   /usr/share/drirc.d:  # Used by mesa-core20 for app specific workarounds
     bind: $SNAP/graphics/drirc.d
+  /etc/gtk-3.0:
+    bind: $SNAP/etc/gtk-3.0
 
 apps:
   confined-shell:
-    command-chain:
-      - bin/desktop-launch
     command: bin/run-egmde
     desktop: usr/share/wayland-sessions/confined-shell.desktop
     slots:
@@ -80,7 +85,7 @@ parts:
       mir_version=`LANG=C apt-cache policy mir-graphics-drivers-desktop | sed -rne 's/^\s+Candidate:\s+([^-]*)-.+$/\1/p'`
       recipe_version=`cat $SNAPCRAFT_STAGE/recipe-version`
       snapcraftctl set-version $server_version-mir$mir_version-snap$recipe_version
-      if echo $mir_version | grep -e '+dev' -e '~rc' -q; then snapcraftctl set-grade devel; else snapcraftctl set-grade stable; fi
+#      if echo $mir_version | grep -e '+dev' -e '~rc' -q; then snapcraftctl set-grade devel; else snapcraftctl set-grade stable; fi
     plugin: cmake
     build-packages:
       - build-essential
@@ -119,6 +124,7 @@ parts:
     - libglu1-mesa
     - libgpm2
     - libgtk3-nocsd0
+    - libgdk-pixbuf2.0-bin # GDK pixbuf
 
   terminal:
     plugin: nil
@@ -126,20 +132,8 @@ parts:
       - xfce4-terminal
     override-build: |
       snapcraftctl build
+      update-mime-database $SNAPCRAFT_PART_INSTALL/usr/share/mime
       rm -f $SNAPCRAFT_PART_INSTALL/usr/share/applications/exo-*
-
-  snapcraft-desktop-helpers:
-    source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
-    source-subdir: gtk
-    plugin: make
-    make-parameters: ["FLAVOR=gtk3"]
-    build-packages:
-      - build-essential
-      - libgtk-3-dev
-    override-build: |
-      snapcraftctl build
-      # desktop-launch doesn't handle running without a user session very well, this avoids slow startup here
-      sed --in-place s'/^  needs_update=true/:/' $SNAPCRAFT_PART_INSTALL/bin/desktop-launch
 
   cleanup:
     after:
@@ -148,7 +142,6 @@ parts:
       - glue
       - misc
       - terminal
-      - snapcraft-desktop-helpers
     plugin: nil
     build-snaps: [ mesa-core20 ]
     override-prime: |
@@ -164,18 +157,6 @@ plugs:
   desktop-launch:
   opengl:
   network-bind:
-  gtk-3-themes:
-    interface: content
-    target: $SNAP/data-dir/themes
-    default-provider: gtk-common-themes
-  icon-themes:
-    interface: content
-    target: $SNAP/data-dir/icons
-    default-provider: gtk-common-themes
-  sound-themes:
-    interface: content
-    target: $SNAP/data-dir/sounds
-    default-provider: gtk-common-themes
   graphics-core20:
     interface: content
     target: $SNAP/graphics

@@ -21,11 +21,6 @@ export XDG_RUNTIME_DIR=$(dirname $XDG_RUNTIME_DIR)
 mkdir -p $XDG_RUNTIME_DIR -m 700
 mkdir -p $XDG_CACHE_HOME
 
-# HACK around changes made by desktop-launch
-export LIBGL_DRIVERS_PATH=$SNAP/graphics/dri
-export __EGL_VENDOR_LIBRARY_DIRS=$SNAP/graphics/glvnd/egl_vendor.d
-export LIBVA_DRIVERS_PATH=$SNAP/graphics/dri
-
 cd $HOME
 unset WAYLAND_DISPLAY
 export EGMDE_SNAP_LAUNCH=

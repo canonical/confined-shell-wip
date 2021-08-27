@@ -11,6 +11,7 @@ environment:
   LC_ALL: C.UTF-8
   PATH: $SNAP/bin/:$SNAP/usr/bin/:${PATH}
   # XDG config
+  XDG_DATA_HOME:   $SNAP_DATA/.local/usr/share
   XDG_DATA_DIRS:   $SNAP/usr/share
   XDG_CONFIG_DIRS: $SNAP/etc/xdg
   XDG_CACHE_HOME:  $SNAP_USER_COMMON/.cache
@@ -24,7 +25,7 @@ environment:
   __EGL_VENDOR_LIBRARY_DIRS: $SNAP/graphics/glvnd/egl_vendor.d
   # GDK pixbuf
   GDK_PIXBUF_MODULEDIR:      $SNAP/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/gdk-pixbuf-2.0/2.10.0/loaders
-  GDK_PIXBUF_MODULE_FILE:    $SNAP_COMMON/loaders.cache
+  GDK_PIXBUF_MODULE_FILE:    $SNAP_DATA/.local/usr/share/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache
   ARCH_TRIPLET:              ${SNAPCRAFT_ARCH_TRIPLET}
 
 layout:
@@ -125,6 +126,7 @@ parts:
     - libgpm2
     - libgtk3-nocsd0
     - libgdk-pixbuf2.0-bin # GDK pixbuf
+    - libglib2.0-0
 
   terminal:
     plugin: nil

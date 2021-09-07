@@ -23,10 +23,6 @@ environment:
   LIBGL_DRIVERS_PATH:        $SNAP/graphics/dri
   LIBVA_DRIVERS_PATH:        $SNAP/graphics/dri
   __EGL_VENDOR_LIBRARY_DIRS: $SNAP/graphics/glvnd/egl_vendor.d
-  # GDK pixbuf
-  GDK_PIXBUF_MODULEDIR:      $SNAP/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/gdk-pixbuf-2.0/2.10.0/loaders
-  GDK_PIXBUF_MODULE_FILE:    $SNAP_DATA/.local/usr/share/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache
-  ARCH_TRIPLET:              ${SNAPCRAFT_ARCH_TRIPLET}
 
 layout:
   /usr/share/X11:
@@ -39,6 +35,10 @@ layout:
     symlink: $SNAP/usr/bin/xkbcomp
   /usr/share/icons:
     bind: $SNAP/usr/share/icons
+  /usr/share/glib-2.0/schemas:
+    bind: $SNAP/usr/share/glib-2.0/schemas
+  /usr/lib/$SNAPCRAFT_ARCH_TRIPLET/gdk-pixbuf-2.0:
+    bind: $SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/gdk-pixbuf-2.0
   /usr/share/libdrm:  # Needed by mesa-core20 on AMD GPUs
     bind: $SNAP/graphics/libdrm
   /usr/share/drirc.d:  # Used by mesa-core20 for app specific workarounds
@@ -136,6 +136,8 @@ parts:
       snapcraftctl build
       update-mime-database $SNAPCRAFT_PART_INSTALL/usr/share/mime
       rm -f $SNAPCRAFT_PART_INSTALL/usr/share/applications/exo-*
+    organize:
+      usr/bin/xfce4-terminal.wrapper: bin/x-terminal-emulator
 
   cleanup:
     after:
@@ -146,6 +148,10 @@ parts:
       - terminal
     plugin: nil
     build-snaps: [ mesa-core20 ]
+    build-packages:
+      - libglib2.0-0
+      - libgdk-pixbuf2.0-0
+      - librsvg2-dev # So the libpixbufloader-svg.so loader can be loaded by gdk-pixbuf-query-loaders
     override-prime: |
       set -eux
       cd /snap/mesa-core20/current/egl/lib
@@ -154,6 +160,12 @@ parts:
       for CRUFT in bug drirc.d glvnd libdrm lintian man; do
         rm -rf "$SNAPCRAFT_PRIME/usr/share/$CRUFT"
       done
+      # Compile the gsettings schemas
+      /usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/glib-2.0/glib-compile-schemas "$SNAPCRAFT_PRIME/usr/share/glib-2.0/schemas"
+      # Index the pixbuf loaders
+      GDK_PIXBUF_MODULEDIR=$SNAPCRAFT_PRIME/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/gdk-pixbuf-2.0/2.10.0/loaders
+      "/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/gdk-pixbuf-2.0/gdk-pixbuf-query-loaders" > "$SNAPCRAFT_PRIME/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/gdk-pixbuf-2.0/2.10.0/loaders.cache"
+      sed s!$SNAPCRAFT_PRIME!!g --in-place "$SNAPCRAFT_PRIME/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/gdk-pixbuf-2.0/2.10.0/loaders.cache"
 
 plugs:
   desktop-launch:

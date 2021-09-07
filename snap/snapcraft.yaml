@@ -136,6 +136,8 @@ parts:
       snapcraftctl build
       update-mime-database $SNAPCRAFT_PART_INSTALL/usr/share/mime
       rm -f $SNAPCRAFT_PART_INSTALL/usr/share/applications/exo-*
+    organize:
+      usr/bin/xfce4-terminal.wrapper: bin/x-terminal-emulator
 
   cleanup:
     after:

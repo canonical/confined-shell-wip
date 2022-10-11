@@ -21,8 +21,18 @@ export XDG_RUNTIME_DIR=$(dirname $XDG_RUNTIME_DIR)
 mkdir -p $XDG_RUNTIME_DIR -m 700
 mkdir -p $XDG_CACHE_HOME
 
+miriway_config="$SNAP_USER_DATA/.config/miriway-shell.config"
+
+[ ! -d "$SNAP_USER_DATA/.config" ] && mkdir $SNAP_USER_DATA/.config -m 700
+
+# Ensure we have a config file with the fixed options
+if [ ! -e "${miriway_config}" ]; then
+cat <<EOT > "${miriway_config}"
+shell-ctrl-alt=a:wofi --show drun --location top_left
+EOT
+fi
+
 cd $HOME
 unset WAYLAND_DISPLAY
-export EGMDE_SNAP_LAUNCH=
-exec $SNAP/usr/local/bin/egmde $@
+exec $@
 

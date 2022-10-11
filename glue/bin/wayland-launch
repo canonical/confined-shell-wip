@@ -1,0 +1,14 @@
+#!/bin/sh
+set -e
+
+export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR}/snap.${SNAP_INSTANCE_NAME}"
+
+real_xdg_runtime_dir=$(dirname "${XDG_RUNTIME_DIR}")
+real_wayland=${real_xdg_runtime_dir}/${WAYLAND_DISPLAY:-wayland-0}
+
+mkdir -p "$XDG_RUNTIME_DIR" -m 700
+ln -sf "${real_wayland}" "$XDG_RUNTIME_DIR"
+ln -sf "${real_wayland}.lock" "$XDG_RUNTIME_DIR"
+unset DISPLAY
+
+exec "$@"

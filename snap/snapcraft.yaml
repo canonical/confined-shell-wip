@@ -103,6 +103,12 @@ parts:
       - libgtk-3-0
       - libpango-1.0-0
 
+  swaybg:
+    plugin: nil
+    stage-packages:
+      - swaybg
+      - ubuntu-wallpapers
+
   icons:
     plugin: nil
     stage-packages: [dmz-cursor-theme]
@@ -150,6 +156,7 @@ parts:
       - miriway
       - env
       - wofi
+      - swaybg
       - icons
       - glue
       - misc

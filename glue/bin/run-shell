@@ -29,6 +29,8 @@ miriway_config="$SNAP_USER_DATA/.config/miriway-shell.config"
 if [ ! -e "${miriway_config}" ]; then
 cat <<EOT > "${miriway_config}"
 shell-ctrl-alt=a:wofi --show drun --location top_left
+shell-meta=a:wofi --show drun --location top_left
+shell-component=wayland-launch swaybg -i /snap/${SNAP_INSTANCE_NAME}/current/usr/share/backgrounds/warty-final-ubuntu.png
 EOT
 fi
 

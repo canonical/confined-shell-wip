@@ -4,12 +4,12 @@ summary: A minimal Mir based confined shell for testing support for such things
 description: A minimal Mir based confined shell for testing support for such things
 confinement: strict
 grade: devel
-base: core20
+base: core22
 
 environment:
   SHELL: bash
   LC_ALL: C.UTF-8
-  PATH: $SNAP/usr/local/bin/:${PATH}
+  PATH: $SNAP/usr/local/bin/:$SNAP/bin:$SNAP/usr/bin:$PATH
   # XDG config
   XDG_DATA_DIRS:   $SNAP/usr/share
   XDG_CONFIG_DIRS: $SNAP/etc/xdg
@@ -18,7 +18,7 @@ environment:
   # Prep for Mir
   MIR_SERVER_PLATFORM_PATH: ${SNAP}/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/mir/server-platform
   # graphics
-  LD_LIBRARY_PATH:           $SNAP/graphics/lib
+  LD_LIBRARY_PATH: /var/lib/snapd/lib/gl:/var/lib/snapd/lib/gl32:/var/lib/snapd/void:$SNAP/graphics/lib:$SNAP/usr/lib:$SNAP/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}
   LIBGL_DRIVERS_PATH:        $SNAP/graphics/dri
   LIBVA_DRIVERS_PATH:        $SNAP/graphics/dri
   __EGL_VENDOR_LIBRARY_DIRS: $SNAP/graphics/glvnd/egl_vendor.d
@@ -34,8 +34,8 @@ layout:
     symlink: $SNAP/usr/bin/xkbcomp
   /usr/share/icons:
     bind: $SNAP/usr/share/icons
-  /usr/lib/$SNAPCRAFT_ARCH_TRIPLET/gdk-pixbuf-2.0:
-    bind: $SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/gdk-pixbuf-2.0
+  /usr/lib/$CRAFT_ARCH_TRIPLET/gdk-pixbuf-2.0:
+    bind: $SNAP/usr/lib/$CRAFT_ARCH_TRIPLET/gdk-pixbuf-2.0
   /usr/share/libdrm:  # Needed by mesa-core20 on AMD GPUs
     bind: $SNAP/graphics/libdrm
   /usr/share/drirc.d:  # Used by mesa-core20 for app specific workarounds
@@ -62,8 +62,10 @@ parts:
     plugin: nil
     source: .
     source-type: git
-    override-build: |
-      git rev-list --count HEAD > $SNAPCRAFT_PART_INSTALL/recipe-version
+    override-pull: |
+      craftctl default
+      echo $CRAFT_STAGE/recipe-version
+      git rev-list --count HEAD > $CRAFT_STAGE/recipe-version
     prime:
       - -recipe-version
 
@@ -71,12 +73,12 @@ parts:
     after: [recipe-version]
     source: https://github.com/Miriway/Miriway.git
     override-pull: |
-      snapcraftctl pull
+      craftctl default
       server_version=`git rev-list --count HEAD`
       mir_version=`LANG=C apt-cache policy mir-graphics-drivers-desktop | sed -rne 's/^\s+Candidate:\s+([^-]*)-.+$/\1/p'`
-      recipe_version=`cat $SNAPCRAFT_STAGE/recipe-version`
-      snapcraftctl set-version $server_version-mir$mir_version-snap$recipe_version
-#      if echo $mir_version | grep -e '+dev' -e '~rc' -q; then snapcraftctl set-grade devel; else snapcraftctl set-grade stable; fi
+      recipe_version=`cat $CRAFT_STAGE/recipe-version`
+      craftctl set version=$server_version-mir$mir_version-snap$recipe_version
+#      if echo $mir_version | grep -e '+dev' -e '~rc' -q; then craftctl set grade devel; else craftctl set-grade stable; fi
     plugin: cmake
     build-packages:
       - build-essential
@@ -90,18 +92,9 @@ parts:
       - -usr/share/wayland-sessions/miriway.desktop
 
   wofi:
-    plugin: meson
-    source: https://hg.sr.ht/~scoopta/wofi
-    source-type: hg
-    source-tag: v1.3
-    build-packages:
-      - libwayland-dev
-      - libgtk-3-dev
-      - pkg-config
+    plugin: nil
     stage-packages:
-      - libcairo2
-      - libgtk-3-0
-      - libpango-1.0-0
+      - wofi
 
   swaybg:
     plugin: nil
@@ -140,45 +133,44 @@ parts:
       - libgdk-pixbuf2.0-0
       - librsvg2-dev # So the libpixbufloader-svg.so loader can be loaded by gdk-pixbuf-query-loaders
     override-build: |
-      snapcraftctl build
-      update-mime-database $SNAPCRAFT_PART_INSTALL/usr/share/mime
+      craftctl default
+      update-mime-database $CRAFT_PART_INSTALL/usr/share/mime
     override-prime: |
-      snapcraftctl prime
+      craftctl default
       # Compile the gsettings schemas
-      /usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/glib-2.0/glib-compile-schemas "$SNAPCRAFT_PRIME/usr/share/glib-2.0/schemas"
+      /usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/glib-2.0/glib-compile-schemas "$CRAFT_PRIME/usr/share/glib-2.0/schemas"
       # Index the pixbuf loaders
-      GDK_PIXBUF_MODULEDIR=$SNAPCRAFT_PRIME/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/gdk-pixbuf-2.0/2.10.0/loaders \
-      "/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/gdk-pixbuf-2.0/gdk-pixbuf-query-loaders" > "$SNAPCRAFT_PRIME/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/gdk-pixbuf-2.0/2.10.0/loaders.cache"
-      sed s!$SNAPCRAFT_PRIME!!g --in-place "$SNAPCRAFT_PRIME/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/gdk-pixbuf-2.0/2.10.0/loaders.cache"
+      GDK_PIXBUF_MODULEDIR=$CRAFT_PRIME/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/gdk-pixbuf-2.0/2.10.0/loaders \
+      "/usr/lib/$CRAFT_ARCH_TRIPLET/gdk-pixbuf-2.0/gdk-pixbuf-query-loaders" > "$CRAFT_PRIME/usr/lib/$CRAFT_ARCH_TRIPLET/gdk-pixbuf-2.0/2.10.0/loaders.cache"
+      sed s!$CRAFT_PRIME!!g --in-place "$CRAFT_PRIME/usr/lib/$CRAFT_ARCH_TRIPLET/gdk-pixbuf-2.0/2.10.0/loaders.cache"
 
-  cleanup:
-    after:
-      - miriway
-      - env
-      - wofi
-      - swaybg
-      - icons
-      - glue
-      - misc
+  mesa-core22:
     plugin: nil
-    build-snaps: [ mesa-core20 ]
-    override-prime: |
-      set -eux
-      cd /snap/mesa-core20/current/egl/lib
-      find . -type f,l -exec rm -f $SNAPCRAFT_PRIME/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/{} \;
-      rm -fr "$SNAPCRAFT_PRIME/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/dri"
-      for CRUFT in bug drirc.d glvnd libdrm lintian man; do
-        rm -rf "$SNAPCRAFT_PRIME/usr/share/$CRUFT"
-      done
+    stage-packages:
+      - libgl1-mesa-dri
+      - va-driver-all
+      - libegl1
+      - libgles2
+    organize:
+      'usr/lib/${CRAFT_ARCH_TRIPLET}/dri/*': graphics/dri/
+      'usr/lib/${CRAFT_ARCH_TRIPLET}/*.so*': graphics/lib/
+      'usr/share/glvnd': graphics/glvnd/
+      'usr/share/libdrm': graphics/libdrm/
+      'usr/share/drirc.d/': graphics/drirc.d/
+    prime:
+      - graphics/lib
+      - graphics/dri
+      - graphics/glvnd
+      - graphics/libdrm
+      - graphics/drirc.d
 
 plugs:
   desktop-launch:
   opengl:
   network-bind:
-  graphics-core20:
-    interface: content
-    target: $SNAP/graphics
-    default-provider: mesa-core20
+
+slots:
+  wayland:
 
 architectures:
   - build-on: amd64

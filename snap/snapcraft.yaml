@@ -22,6 +22,7 @@ environment:
   LIBGL_DRIVERS_PATH:        $SNAP/graphics/dri
   LIBVA_DRIVERS_PATH:        $SNAP/graphics/dri
   __EGL_VENDOR_LIBRARY_DIRS: $SNAP/graphics/glvnd/egl_vendor.d
+  LIBINPUT_QUIRKS_DIR: ${SNAP}/usr/share/libinput
 
 layout:
   /usr/share/X11:
@@ -42,6 +43,8 @@ layout:
     bind: $SNAP/graphics/drirc.d
   /etc/gtk-3.0:
     bind: $SNAP/etc/gtk-3.0
+  /usr/libexec/libinput:
+    bind: $SNAP/usr/libexec/libinput
 
 apps:
   confined-shell:
@@ -54,8 +57,15 @@ apps:
     plugs:
       - login-session-control
       - x11
+      - desktop-launch
+      - opengl
     environment:
       XDG_DATA_DIRS: $SNAP/usr/share:/var/lib/snapd/desktop
+
+  libinput:
+    command: usr/bin/libinput
+    plugs:
+      - hardware-observe
 
 parts:
   recipe-version:
@@ -108,6 +118,11 @@ parts:
     stage-packages:
       - swaybg
       - ubuntu-wallpapers
+
+  libinput:
+    plugin: nil
+    stage-packages:
+      - libinput-tools
 
   icons:
     plugin: nil
@@ -172,9 +187,6 @@ parts:
       done
 
 plugs:
-  desktop-launch:
-  opengl:
-  network-bind:
   graphics-core20:
     interface: content
     target: $SNAP/graphics

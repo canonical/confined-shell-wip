@@ -22,6 +22,7 @@ environment:
   LIBGL_DRIVERS_PATH:        $SNAP/graphics/dri
   LIBVA_DRIVERS_PATH:        $SNAP/graphics/dri
   __EGL_VENDOR_LIBRARY_DIRS: $SNAP/graphics/glvnd/egl_vendor.d
+  LIBINPUT_QUIRKS_DIR:       $SNAP/usr/share/libinput
 
 layout:
   /usr/share/X11:

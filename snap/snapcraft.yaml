@@ -7,7 +7,7 @@ description: |
   To activate the wofi launcher press `Meta+a`. This will show snaps publishing a
   .desktop file, but only Wayland based snaps will run successfully
 confinement: strict
-grade: devel
+grade: stable
 base: core20
 
 environment:

@@ -1,7 +1,11 @@
 name: confined-shell
 adopt-info: miriway
 summary: A minimal Mir based confined shell for testing support for such things
-description: A minimal Mir based confined shell for testing support for such things
+description: |
+  The current iteration is based on Miriway, swaybg and wofi.
+  
+  To activate the wofi launcher press `Meta+a`. This will show snaps publishing a
+  .desktop file, but only Wayland based snaps will run successfully
 confinement: strict
 grade: devel
 base: core20

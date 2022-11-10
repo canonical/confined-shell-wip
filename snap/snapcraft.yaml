@@ -5,7 +5,13 @@ description: |
   The current iteration is based on Miriway, swaybg and wofi.
   
   To activate the wofi launcher press `Meta+a`. This will show snaps publishing a
-  .desktop file, but only Wayland based snaps will run successfully
+  .desktop file, but only Wayland based snaps will run successfully.
+  
+  To exit the shell press Ctrl-Alt-BkSp (long press if apps are running)
+  
+  For the greeter (e.g. GDM) to recognise the confined-shell session run:
+  
+      /snap/confined-shell/current/bin/setup.sh
 confinement: strict
 grade: stable
 base: core20

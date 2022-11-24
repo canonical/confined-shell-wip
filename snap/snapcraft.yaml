@@ -14,12 +14,12 @@ description: |
       /snap/confined-shell/current/bin/setup.sh
 confinement: strict
 grade: stable
-base: core20
+base: core22
 
 environment:
   SHELL: bash
   LC_ALL: C.UTF-8
-  PATH: $SNAP/usr/local/bin/:${PATH}
+  PATH: $SNAP/usr/local/bin/:$SNAP/bin/:$SNAP/usr/bin/:${PATH}
   # XDG config
   XDG_DATA_DIRS:   $SNAP/usr/share
   XDG_CONFIG_DIRS: $SNAP/etc/xdg
@@ -28,10 +28,10 @@ environment:
   # Prep for Mir
   MIR_SERVER_PLATFORM_PATH: ${SNAP}/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/mir/server-platform
   # graphics
-  LD_LIBRARY_PATH:           $SNAP/graphics/lib
-  LIBGL_DRIVERS_PATH:        $SNAP/graphics/dri
-  LIBVA_DRIVERS_PATH:        $SNAP/graphics/dri
-  __EGL_VENDOR_LIBRARY_DIRS: $SNAP/graphics/glvnd/egl_vendor.d
+  LD_LIBRARY_PATH:           $SNAP/graphics/usr/lib/:$SNAP/graphics/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}:$SNAP/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
+  LIBGL_DRIVERS_PATH:        $SNAP/graphics/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/dri/
+  LIBVA_DRIVERS_PATH:        $SNAP/graphics/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/dri/
+  __EGL_VENDOR_LIBRARY_DIRS: $SNAP/graphics/usr/share/glvnd/egl_vendor.d
   LIBINPUT_QUIRKS_DIR:       $SNAP/usr/share/libinput
 
 layout:
@@ -47,10 +47,10 @@ layout:
     bind: $SNAP/usr/share/icons
   /usr/lib/$SNAPCRAFT_ARCH_TRIPLET/gdk-pixbuf-2.0:
     bind: $SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/gdk-pixbuf-2.0
-  /usr/share/libdrm:  # Needed by mesa-core20 on AMD GPUs
-    bind: $SNAP/graphics/libdrm
-  /usr/share/drirc.d:  # Used by mesa-core20 for app specific workarounds
-    bind: $SNAP/graphics/drirc.d
+  /usr/share/libdrm:  # Needed by mesa-core22 on AMD GPUs
+    bind: $SNAP/graphics/usr/share/libdrm
+  /usr/share/drirc.d:  # Used by mesa-core22 for app specific workarounds
+    bind: $SNAP/graphics/usr/share/drirc.d
   /etc/gtk-3.0:
     bind: $SNAP/etc/gtk-3.0
 
@@ -69,24 +69,14 @@ apps:
       XDG_DATA_DIRS: $SNAP/usr/share:/var/lib/snapd/desktop
 
 parts:
-  recipe-version:
-    plugin: nil
-    source: .
-    source-type: git
-    override-build: |
-      git rev-list --count HEAD > $SNAPCRAFT_PART_INSTALL/recipe-version
-    prime:
-      - -recipe-version
-
   miriway:
-    after: [recipe-version]
     source: https://github.com/Miriway/Miriway.git
     override-pull: |
-      snapcraftctl pull
+      craftctl default
       server_version=`git rev-list --count HEAD`
       mir_version=`LANG=C apt-cache policy mir-graphics-drivers-desktop | sed -rne 's/^\s+Candidate:\s+([^-]*)-.+$/\1/p'`
-      recipe_version=`cat $SNAPCRAFT_STAGE/recipe-version`
-      snapcraftctl set-version $server_version-mir$mir_version-snap$recipe_version
+      recipe_version=`GIT_DIR=../../../project/.git git rev-list --count HEAD`
+      craftctl set version=$server_version-mir$mir_version-snap$recipe_version
 #      if echo $mir_version | grep -e '+dev' -e '~rc' -q; then snapcraftctl set-grade devel; else snapcraftctl set-grade stable; fi
     plugin: cmake
     build-packages:
@@ -101,18 +91,9 @@ parts:
       - -usr/share/wayland-sessions/miriway.desktop
 
   wofi:
-    plugin: meson
-    source: https://hg.sr.ht/~scoopta/wofi
-    source-type: hg
-    source-tag: v1.3
-    build-packages:
-      - libwayland-dev
-      - libgtk-3-dev
-      - pkg-config
+    plugin: nil
     stage-packages:
-      - libcairo2
-      - libgtk-3-0
-      - libpango-1.0-0
+      - wofi
 
   swaybg:
     plugin: nil
@@ -172,12 +153,11 @@ parts:
       - glue
       - misc
     plugin: nil
-    build-snaps: [ mesa-core20 ]
+    build-snaps: [ mesa-core22-test ]
     override-prime: |
       set -eux
-      cd /snap/mesa-core20/current/egl/lib
-      find . -type f,l -exec rm -f $SNAPCRAFT_PRIME/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/{} \;
-      rm -fr "$SNAPCRAFT_PRIME/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/dri"
+      cd /snap/mesa-core22-test/current/usr/
+      find . -type f,l -exec rm -f $SNAPCRAFT_PRIME/usr/{} \;
       for CRUFT in bug drirc.d glvnd libdrm lintian man; do
         rm -rf "$SNAPCRAFT_PRIME/usr/share/$CRUFT"
       done
@@ -186,10 +166,10 @@ plugs:
   desktop-launch:
   opengl:
   network-bind:
-  graphics-core20:
+  graphics-core22:
     interface: content
     target: $SNAP/graphics
-    default-provider: mesa-core20
+    default-provider: mesa-core22-test/edge
 
 architectures:
   - build-on: amd64

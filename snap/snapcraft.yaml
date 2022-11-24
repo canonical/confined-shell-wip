@@ -65,6 +65,7 @@ apps:
     plugs:
       - login-session-control
       - x11
+      - hardware-observe
     environment:
       XDG_DATA_DIRS: $SNAP/usr/share:/var/lib/snapd/desktop
 
@@ -101,6 +102,43 @@ parts:
       - swaybg
       - ubuntu-wallpapers
 
+  yambar:
+    plugin: meson
+    meson-parameters:
+      - -Dbackend-x11=disabled
+      - -Dbackend-wayland=enabled
+    build-packages:
+      - meson
+      - ninja-build
+      - wayland-protocols
+      - libasound2-dev
+      - libfcft-dev
+      - libfontconfig-dev
+      - libharfbuzz-dev
+      - libinotifytools0-dev
+      - libjson-c-dev
+      - libmpdclient-dev
+      - libpixman-1-dev
+      - libtllist-dev
+      - libudev-dev
+      - libwayland-dev
+      - libyaml-dev
+      - scdoc
+      - flex
+      - bison
+    source: https://codeberg.org/dnkl/yambar.git
+    stage-packages:
+      - fonts-font-awesome
+      - libasound2
+      - libfcft4
+      - libjson-c5
+      - libmpdclient2
+      - libpixman-1-0
+      - libudev1
+      - libwayland-client0
+      - libwayland-cursor0
+      - libyaml-0-2
+
   icons:
     plugin: nil
     stage-packages: [dmz-cursor-theme]
@@ -127,6 +165,7 @@ parts:
     - libgtk3-nocsd0
     - libgdk-pixbuf2.0-bin # GDK pixbuf
     - libglib2.0-0
+    - dbus
     build-packages:
       - libglib2.0-0
       - libgdk-pixbuf2.0-0
@@ -147,6 +186,7 @@ parts:
     after:
       - miriway
       - env
+      - yambar
       - wofi
       - swaybg
       - icons
@@ -164,7 +204,6 @@ parts:
 plugs:
   desktop-launch:
   opengl:
-  network-bind:
   graphics-core22:
     interface: content
     target: $SNAP/graphics

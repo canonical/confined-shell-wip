@@ -20,8 +20,6 @@ environment:
   SHELL: bash
   LC_ALL: C.UTF-8
   PATH: $SNAP/usr/local/bin/:$SNAP/bin/:$SNAP/usr/bin/:${PATH}
-  LD_LIBRARY_PATH: $SNAP/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
-
   # XDG config
   XDG_DATA_DIRS:   $SNAP/usr/share
   XDG_CONFIG_DIRS: $SNAP/etc/xdg
@@ -33,8 +31,8 @@ environment:
   LIBINPUT_QUIRKS_DIR:       $SNAP/usr/share/libinput
 
 layout:
-  /usr/share/X11:
-    bind: $SNAP/usr/share/X11
+  /usr/share/X11/xkb:
+    bind: $SNAP/usr/share/X11/xkb
   /etc/fonts:
     bind: $SNAP/etc/fonts
   /usr/share/fonts:
@@ -49,8 +47,12 @@ layout:
     symlink: $SNAP_COMMON/graphics/usr/share/libdrm
   /usr/share/drirc.d:  # Used by mesa-core22 for app specific workarounds
     symlink: $SNAP_COMMON/graphics/usr/share/drirc.d
-  /usr/share/vulkan:   # Used by mesa-core22 for vulkan specifics
+  /usr/share/vulkan:   # Used by graphics-core22 for vulkan specifics
     symlink: $SNAP_COMMON/graphics/usr/share/vulkan
+  /usr/share/X11/XErrorDB:   # Used by graphics-core22 for X11
+    symlink: $SNAP_COMMON/graphics/usr/share/X11/XErrorDB
+  /usr/share/X11/locale:   # Used by graphics-core22 for X11
+    symlink: $SNAP_COMMON/graphics/usr/share/X11/locale
   /etc/gtk-3.0:
     bind: $SNAP/etc/gtk-3.0
 

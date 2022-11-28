@@ -29,7 +29,7 @@ copy_branches() {
 }
 
 copy_branches etc "vdpau_wrapper.cfg"
-copy_branches usr "lib/$(arch)-linux-gnu/vdpau/" "share/drirc.d" "share/libdrm" "share/vulkan" "share/X11" "lib/i386-linux-gnu/vdpau/"
+copy_branches usr "lib/$(arch)-linux-gnu/vdpau/" "share/drirc.d" "share/libdrm" "share/vulkan" "share/X11/XErrorDB" "share/X11/locale" "lib/i386-linux-gnu/vdpau/"
 
 rm -rf "${graphics}"
 mv "${new_shared_graphics}" "${graphics}"

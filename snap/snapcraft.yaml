@@ -77,7 +77,7 @@ parts:
       mir_version=`LANG=C apt-cache policy mir-graphics-drivers-desktop | sed -rne 's/^\s+Candidate:\s+([^-]*)-.+$/\1/p'`
       recipe_version=`GIT_DIR=../../../project/.git git rev-list --count HEAD`
       craftctl set version=$server_version-mir$mir_version-snap$recipe_version
-#      if echo $mir_version | grep -e '+dev' -e '~rc' -q; then snapcraftctl set-grade devel; else snapcraftctl set-grade stable; fi
+      if echo $mir_version | grep -e '+dev' -e '~rc' -q; then craftctl set grade=devel; else craftctl set grade=stable; fi
     plugin: cmake
     build-packages:
       - build-essential
@@ -153,7 +153,7 @@ parts:
       - glue
       - misc
     plugin: nil
-    build-snaps: [ mesa-core22-test ]
+    build-snaps: [ mesa-core22-test/edge ]
     override-prime: |
       set -eux
       cd /snap/mesa-core22-test/current/usr/

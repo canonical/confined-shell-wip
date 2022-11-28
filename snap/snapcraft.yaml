@@ -48,9 +48,11 @@ layout:
   /usr/lib/$SNAPCRAFT_ARCH_TRIPLET/gdk-pixbuf-2.0:
     bind: $SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/gdk-pixbuf-2.0
   /usr/share/libdrm:  # Needed by mesa-core22 on AMD GPUs
-    bind: $SNAP/graphics/usr/share/libdrm
+    symlink: $SNAP_COMMON/graphics/usr/share/libdrm
   /usr/share/drirc.d:  # Used by mesa-core22 for app specific workarounds
-    bind: $SNAP/graphics/usr/share/drirc.d
+    symlink: $SNAP_COMMON/graphics/usr/share/drirc.d
+  /usr/share/vulkan:   # Used by mesa-core22 for vulkan specifics
+    symlink: $SNAP_COMMON/graphics/usr/share/vulkan
   /etc/gtk-3.0:
     bind: $SNAP/etc/gtk-3.0
 

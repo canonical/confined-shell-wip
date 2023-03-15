@@ -6,6 +6,9 @@ sudo snap connect confined-shell:x11
 # To launch other snaps
 sudo snap connect confined-shell:desktop-launch
 
+# To Monitor battery, WiFi, etc
+sudo snap connect confined-shell:hardware-observe
+
 # For DM
 sudo snap connect confined-shell:login-session-control
 if [ -d "/usr/share/wayland-sessions/" ]

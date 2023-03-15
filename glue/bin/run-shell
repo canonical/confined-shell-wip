@@ -4,7 +4,7 @@ set -e
 if [ $(id -u) != 0 ] && [ ! -v DISPLAY ] && ! snapctl is-connected login-session-control; then
   echo "ERROR: You need one of: root, a DISPLAY, or to connect the login-session-control interface."
   echo ""
-  echo "To connect the login-session-control and desktop-launch interfaces and add to the login menu:"
+  echo "To connect the interfaces and add to the login menu:"
   echo "  /snap/confined-shell/current/bin/setup.sh"
   exit 1
 fi
@@ -12,22 +12,29 @@ fi
 if ! snapctl is-connected desktop-launch; then
   echo "ERROR: You need to connect the desktop-launch interface."
   echo ""
-  echo "To connect the login-session-control and desktop-launch interfaces and add to the login menu:"
+  echo "To connect the interfaces and add to the login menu:"
   echo "  /snap/confined-shell/current/bin/setup.sh"
   exit 1
 fi
 
-export XDG_RUNTIME_DIR=$(dirname $XDG_RUNTIME_DIR)
-mkdir -p $XDG_RUNTIME_DIR -m 700
-mkdir -p $XDG_CACHE_HOME
+if ! snapctl is-connected hardware-observe; then
+  echo "ERROR: You need to connect the hardware-observe interface."
+  echo ""
+  echo "To connect the interfaces and add to the login menu:"
+  echo "  /snap/confined-shell/current/bin/setup.sh"
+  exit 1
+fi
+
+export XDG_RUNTIME_DIR="$(dirname $XDG_RUNTIME_DIR)"
+mkdir -p "$XDG_RUNTIME_DIR" -m 700
+mkdir -p "$XDG_CACHE_HOME"
 
 miriway_config="$SNAP_USER_DATA/.config/miriway-shell.config"
 yambar_config="$SNAP_USER_DATA/.config/yambar/config.yml"
 
-[ ! -d "$SNAP_USER_DATA/.config" ] && mkdir $SNAP_USER_DATA/.config -m 700
+[ ! -d "$SNAP_USER_DATA/.config" ] && mkdir "$SNAP_USER_DATA/.config" -m 700
 
 # Ensure we have a config file with the fixed options
-if [ ! -e "${miriway_config}" ]; then
 cat <<EOT > "${miriway_config}"
 shell-component=dbus-update-activation-environment --systemd --verbose WAYLAND_DISPLAY XDG_DATA_DIRS=/usr/local/share:/usr/share:/var/lib/snapd/desktop MOZ_ENABLE_WAYLAND
 
@@ -36,11 +43,9 @@ shell-meta=a:wofi --show drun --location top_left
 shell-component=wayland-launch swaybg -i /snap/${SNAP_INSTANCE_NAME}/current/usr/share/backgrounds/warty-final-ubuntu.png
 shell-component=wayland-launch yambar
 EOT
-fi
 
 # Ensure we have a config file with the fixed options
-if [ ! -e "${yambar_config}" ]; then
-  mkdir -p $(dirname "${yambar_config}")
+mkdir -p -m 700 "$(dirname "${yambar_config}")"
 cat <<EOT > "${yambar_config}"
 awesome: &awesome Font Awesome 6 Free:style=solid:pixelsize=14
 ubuntu: &ubuntu Font Ubuntu 6 Free:style=solid:pixelsize=14
@@ -51,19 +56,32 @@ bar:
   background: 282828ff
   font: *ubuntu
 
+  left:
+    - label:
+        content:
+          string:
+            text: " start"
+            margin: 5
+            on-click: wofi --show drun --location top_left
+            deco: &greybg
+              background:
+                color: 3f3f3fff
+
   center:
     - clock:
         content:
           - string:
               margin: 5
               text: "{date} {time}"
-              deco: &greybg
-                background:
-                  color: 3f3f3fff
+              deco: *greybg
 
   right:
+EOT
+
+for wificard in /sys/class/net/wl*
+do cat <<EOT >> "${yambar_config}"
     - network:
-        name: wlp4s0
+        name: $(basename "$wificard")
         content:
           map:
             deco: *greybg
@@ -81,8 +99,13 @@ bar:
                     ipv4 == "":
                       - string: {text: , font: *awesome}
 #                      - string: {text: "{ssid} {dl-speed:mb}/{ul-speed:mb} Mb/s"}
+EOT
+done
+
+for battery in /sys/class/power_supply/BAT*
+do cat <<EOT >> "${yambar_config}"
     - battery:
-        name: BAT0
+        name: $(basename "$battery")
         anchors:
           discharging: &discharging
             list:
@@ -131,28 +154,10 @@ bar:
                       - string: {text:  , foreground: 00ff00ff, font: *awesome}
                       - string: {text:  , foreground: 00ff00ff, font: *awesome}
                 - string: {text: "{capacity}%"}
-
-  left:
-    - label:
-        content:
-          string:
-            text: " start"
-            deco: *greybg
-            margin: 5
-            on-click: wofi --show drun --location top_left
-
-    - foreign-toplevel:
-        content:
-          map:
-            deco: *greybg
-            conditions:
-              ~activated: {empty: {}}
-              activated:
-                - string: {text: "{app-id}: {title}"}
 EOT
-fi
+done
 
-cd $HOME
+cd "$HOME"
 unset WAYLAND_DISPLAY
 exec $@
 

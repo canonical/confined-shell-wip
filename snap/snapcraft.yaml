@@ -44,23 +44,21 @@ layout:
   /usr/lib/$SNAPCRAFT_ARCH_TRIPLET/gdk-pixbuf-2.0:
     bind: $SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/gdk-pixbuf-2.0
   /usr/share/libdrm:  # Needed by mesa-core22 on AMD GPUs
-    symlink: $SNAP_COMMON/graphics/usr/share/libdrm
+    bind: $SNAP_COMMON/graphics/usr/share/libdrm
   /usr/share/drirc.d:  # Used by mesa-core22 for app specific workarounds
-    symlink: $SNAP_COMMON/graphics/usr/share/drirc.d
-  /usr/share/vulkan:   # Used by graphics-core22 for vulkan specifics
-    symlink: $SNAP_COMMON/graphics/usr/share/vulkan
+    bind: $SNAP_COMMON/graphics/usr/share/drirc.d
   /usr/share/X11/XErrorDB:   # Used by graphics-core22 for X11
-    symlink: $SNAP_COMMON/graphics/usr/share/X11/XErrorDB
+    bind: $SNAP_COMMON/graphics/usr/share/X11/XErrorDB
   /usr/share/X11/locale:   # Used by graphics-core22 for X11
-    symlink: $SNAP_COMMON/graphics/usr/share/X11/locale
+    bind: $SNAP_COMMON/graphics/usr/share/X11/locale
   /etc/gtk-3.0:
     bind: $SNAP/etc/gtk-3.0
 
 apps:
   confined-shell:
     command-chain:
-      - bin/setup-graphics
       - bin/run-shell
+      - bin/graphics-core22-wrapper
     command: usr/local/bin/miriway
     desktop: usr/share/wayland-sessions/confined-shell.desktop
     slots:
@@ -146,7 +144,7 @@ parts:
       "/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/gdk-pixbuf-2.0/gdk-pixbuf-query-loaders" > "$SNAPCRAFT_PRIME/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/gdk-pixbuf-2.0/2.10.0/loaders.cache"
       sed s!$SNAPCRAFT_PRIME!!g --in-place "$SNAPCRAFT_PRIME/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/gdk-pixbuf-2.0/2.10.0/loaders.cache"
 
-  cleanup:
+  graphics-core22:
     after:
       - miriway
       - env
@@ -155,15 +153,14 @@ parts:
       - icons
       - glue
       - misc
-    plugin: nil
-    build-snaps: [ mesa-core22-test/edge ]
+    source: https://github.com/MirServer/graphics-core22.git
+    plugin: dump
     override-prime: |
-      set -eux
-      cd /snap/mesa-core22-test/current/usr/
-      find . -type f,l -exec rm -f $SNAPCRAFT_PRIME/usr/{} \;
-      for CRUFT in bug drirc.d glvnd libdrm lintian man; do
-        rm -rf "$SNAPCRAFT_PRIME/usr/share/$CRUFT"
-      done
+      craftctl default
+      ${CRAFT_PART_SRC}/bin/graphics-core22-cleanup mesa-core22
+      rm -rf ${CRAFT_PRIME}/{bug,doc,lintian,man}
+    prime:
+      - bin/graphics-core22-wrapper
 
 plugs:
   desktop-launch:
@@ -172,7 +169,7 @@ plugs:
   graphics-core22:
     interface: content
     target: $SNAP/graphics
-    default-provider: mesa-core22-test/edge
+    default-provider: mesa-core22/edge
 
 architectures:
   - build-on: amd64

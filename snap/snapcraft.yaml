@@ -29,12 +29,10 @@ environment:
   MIR_SERVER_PLATFORM_PATH: ${SNAP}/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/mir/server-platform
   # graphics
   LIBINPUT_QUIRKS_DIR:       $SNAP/usr/share/libinput
+  # Setup XKB
+  XKB_CONFIG_ROOT: $SNAP/usr/share/X11/xkb
 
 layout:
-  /usr/share/X11/xkb:
-    bind: $SNAP/usr/share/X11/xkb
-  /etc/fonts:
-    bind: $SNAP/etc/fonts
   /usr/share/fonts:
     bind: $SNAP/usr/share/fonts
   /usr/bin/xkbcomp:
@@ -42,15 +40,18 @@ layout:
   /usr/share/icons:
     bind: $SNAP/usr/share/icons
   /usr/lib/$SNAPCRAFT_ARCH_TRIPLET/gdk-pixbuf-2.0:
-    bind: $SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/gdk-pixbuf-2.0
+    symlink: $SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/gdk-pixbuf-2.0
   /usr/share/drirc.d:  # Used by mesa-core22 for app specific workarounds
-    bind: $SNAP_COMMON/graphics/usr/share/drirc.d
+    symlink: $SNAP_COMMON/graphics/usr/share/drirc.d
   /usr/share/X11/XErrorDB:   # Used by graphics-core22 for X11
-    bind: $SNAP_COMMON/graphics/usr/share/X11/XErrorDB
+    symlink: $SNAP_COMMON/graphics/usr/share/X11/XErrorDB
   /usr/share/X11/locale:   # Used by graphics-core22 for X11
-    bind: $SNAP_COMMON/graphics/usr/share/X11/locale
+    symlink: $SNAP_COMMON/graphics/usr/share/X11/locale
+  # these could be avoided through a desktop plug
   /etc/gtk-3.0:
     bind: $SNAP/etc/gtk-3.0
+  /etc/fonts:
+    bind: $SNAP/etc/fonts
 
 apps:
   confined-shell:

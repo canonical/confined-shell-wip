@@ -29,6 +29,11 @@ export XDG_RUNTIME_DIR="$(dirname $XDG_RUNTIME_DIR)"
 mkdir -p "$XDG_RUNTIME_DIR" -m 700
 mkdir -p "$XDG_CACHE_HOME"
 
+if [ -n "${WAYLAND_DISPLAY}" ] && [ -e "${XDG_RUNTIME_DIR}/${WAYLAND_DISPLAY}" ] || [ -e "${XDG_RUNTIME_DIR}/${WAYLAND_DISPLAY}.lock" ]; then
+    echo "ERROR: ${XDG_RUNTIME_DIR}/${WAYLAND_DISPLAY} is busy, please choose a different XDG_RUNTIME_DIR or WAYLAND_DISPLAY"
+    exit 1
+fi
+
 miriway_config="$SNAP_USER_DATA/.config/miriway-shell.config"
 yambar_config="$SNAP_USER_DATA/.config/yambar/config.yml"
 
@@ -158,6 +163,6 @@ EOT
 done
 
 cd "$HOME"
-unset WAYLAND_DISPLAY
+
 exec $@
 

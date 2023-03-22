@@ -71,14 +71,24 @@ apps:
       LD_LIBRARY_PATH: $LD_LIBRARY_PATH:${SNAP}/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/pulseaudio
 
 parts:
+  mir:
+    plugin: nil
+    stage-snaps:
+      - mir-libs/24/edge
+    prime:
+      - -*.h
+      - -*.pc
+      - -share
+
   miriway:
+    after: [mir]
     source: https://github.com/Miriway/Miriway.git
-    override-pull: |
+    override-build: |
       craftctl default
-      server_version=`git rev-list --count HEAD`
-      mir_version=`LANG=C apt-cache policy mir-graphics-drivers-desktop | sed -rne 's/^\s+Candidate:\s+([^-]*)-.+$/\1/p'`
       # work around https://github.com/diddlesnaps/snapcraft-multiarch-action/issues/22
-      git config --global --add safe.directory ${CRAFT_PROJECT_DIR}
+      git config --global --add safe.directory ${CRAFT_PART_SRC}
+      server_version=`git -C ${CRAFT_PART_SRC} rev-list --count HEAD`
+      mir_version=$( sed -rne 's/^version:\s+([^-]*)-.+$/\1/p' ${SNAPCRAFT_STAGE}/meta.mir-libs/snap.yaml )
       recipe_version=`git -C ${CRAFT_PROJECT_DIR} rev-list --count HEAD`
       craftctl set version=$server_version-mir$mir_version-snap$recipe_version
       if echo $mir_version | grep -e '+dev' -e '~rc' -q; then craftctl set grade=devel; else craftctl set grade=stable; fi
@@ -87,20 +97,14 @@ parts:
       - build-essential
       - pkg-config
       - libboost-dev
-      - libmiral-dev
-      - libmircommon-dev
-      - libmirwayland-dev
       - g++
+      - libwayland-dev
+      - libxkbcommon-dev
+    build-environment:
+    - LD_LIBRARY_PATH: ${CRAFT_STAGE}/usr/lib/${CRAFT_ARCH_TRIPLET}
     stage-packages:
-      - mir-graphics-drivers-desktop
-      - mir-graphics-drivers-nvidia
-      # Stage libmiral<n> indirectly as we cannot (since core22) do `try:/else:`
-      - libmiral-dev
-    prime:
-      # Do not prime the `-dev` part of libmiral-dev, we don't need it (just the libmiral<n> dependency)
-      - -usr/include
-      - -usr/lib/*/pkgconfig
-      - -usr/lib/*/libmir*.so
+      - libxkbcommon0
+    stage:
       - -usr/share/wayland-sessions/miriway.desktop
 
   wofi:
@@ -183,7 +187,3 @@ platforms:
   amd64:
   arm64:
   armhf:
-
-package-repositories:
-  - type: apt
-    ppa: mir-team/release

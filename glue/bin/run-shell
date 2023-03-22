@@ -158,6 +158,6 @@ EOT
 done
 
 cd "$HOME"
-unset WAYLAND_DISPLAY
+
 exec $@
 

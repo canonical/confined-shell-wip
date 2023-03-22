@@ -33,8 +33,10 @@ environment:
   XKB_CONFIG_ROOT: $SNAP/usr/share/X11/xkb
 
 layout:
-  /usr/share/fonts:
-    bind: $SNAP/usr/share/fonts
+  /usr/share/fonts/truetype/font-awesome:
+    symlink: $SNAP/usr/share/fonts/truetype/font-awesome
+  /usr/share/fonts/truetype/ubuntu:
+    symlink: $SNAP/usr/share/fonts/truetype/ubuntu
   /usr/bin/xkbcomp:
     symlink: $SNAP/usr/bin/xkbcomp
   /usr/share/icons:
@@ -129,6 +131,7 @@ parts:
     source: https://codeberg.org/dnkl/yambar.git
     stage-packages:
       - fonts-font-awesome
+      - fonts-ubuntu
       - libasound2
       - libfcft4
       - libjson-c5

@@ -129,6 +129,7 @@ parts:
       - flex
       - bison
     source: https://codeberg.org/dnkl/yambar.git
+    source-tag: 1.9.0
     stage-packages:
       - fonts-font-awesome
       - fonts-ubuntu

@@ -157,18 +157,8 @@ parts:
   misc:
     plugin: nil
     stage-packages:
-    - libxcb1
-    - libpulse0
-    - libsndfile1
-    - libasyncns0
-    - liblua5.2-0
-    - libslang2
-    - libglu1-mesa
-    - libgpm2
-    - libgtk3-nocsd0
     - libgdk-pixbuf2.0-bin # GDK pixbuf
     - libglib2.0-0
-    - dbus
     build-packages:
       - libglib2.0-0
       - libgdk-pixbuf2.0-0

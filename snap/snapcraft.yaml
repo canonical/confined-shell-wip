@@ -130,6 +130,7 @@ parts:
       - bison
     source: https://codeberg.org/dnkl/yambar.git
     source-tag: 1.9.0
+    source-depth: 1
     stage-packages:
       - fonts-font-awesome
       - fonts-ubuntu

@@ -90,6 +90,7 @@ parts:
     stage-packages:
       - libmiral5
       - mir-graphics-drivers-desktop
+      - mir-graphics-drivers-nvidia
     stage:
       - -usr/share/wayland-sessions/miriway.desktop
 

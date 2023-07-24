@@ -1,5 +1,8 @@
 {
   "desktop-launch":{
     "allow-installation": "true"
+  },
+  "system-files":{
+    "allow-installation": "true"
   }
 }

@@ -65,9 +65,12 @@ apps:
     slots:
       - wayland
     plugs:
+      - desktop-launch
+      - fonts
       - login-session-control
-      - x11
       - hardware-observe
+      - opengl
+      - x11
     environment:
       XDG_DATA_DIRS: $SNAP/usr/share:/var/lib/snapd/desktop
 
@@ -204,6 +207,12 @@ plugs:
     interface: content
     target: $SNAP/graphics
     default-provider: mesa-core22
+  fonts:
+    interface: system-files
+    read:
+      - /etc/fonts
+      - /usr/share/fonts
+      - /usr/share/fonts/truetype
 
 architectures:
   - build-on: amd64

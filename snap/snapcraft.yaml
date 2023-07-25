@@ -33,10 +33,8 @@ environment:
   XKB_CONFIG_ROOT: $SNAP/usr/share/X11/xkb
 
 layout:
-  /usr/share/fonts/truetype/font-awesome:
-    symlink: $SNAP/usr/share/fonts/truetype/font-awesome
-  /usr/share/fonts/truetype/ubuntu:
-    symlink: $SNAP/usr/share/fonts/truetype/ubuntu
+  /usr/share/fonts:
+    bind: $SNAP/usr/share/fonts
   /usr/bin/xkbcomp:
     symlink: $SNAP/usr/bin/xkbcomp
   /usr/share/icons:
@@ -66,7 +64,6 @@ apps:
       - wayland
     plugs:
       - desktop-launch
-      - fonts
       - login-session-control
       - hardware-observe
       - opengl
@@ -205,12 +202,6 @@ plugs:
     interface: content
     target: $SNAP/graphics
     default-provider: mesa-core22
-  fonts:
-    interface: system-files
-    read:
-      - /etc/fonts
-      - /usr/share/fonts
-      - /usr/share/fonts/truetype
 
 architectures:
   - build-on: amd64

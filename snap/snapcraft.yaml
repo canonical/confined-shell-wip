@@ -62,6 +62,8 @@ apps:
     desktop: usr/share/wayland-sessions/confined-shell.desktop
     slots:
       - wayland
+      - dbus-freedesktop-impl-portal-gnome
+      - dbus-freedesktop-impl-portal-gtk
     plugs:
       - desktop-launch
       - login-session-control
@@ -162,6 +164,8 @@ parts:
     stage-packages:
     - libgdk-pixbuf2.0-bin # GDK pixbuf
     - libglib2.0-0
+    - xdg-desktop-portal-gnome
+    - xdg-desktop-portal-gtk
     build-packages:
       - libglib2.0-0
       - libgdk-pixbuf2.0-0
@@ -202,6 +206,16 @@ plugs:
     interface: content
     target: $SNAP/graphics
     default-provider: mesa-core22
+
+slots:
+  dbus-freedesktop-impl-portal-gnome:
+    interface: dbus
+    bus: session
+    name: org.freedesktop.impl.portal.desktop.gnome
+  dbus-freedesktop-impl-portal-gtk:
+    interface: dbus
+    bus: session
+    name: org.freedesktop.impl.portal.desktop.gtk
 
 architectures:
   - build-on: amd64

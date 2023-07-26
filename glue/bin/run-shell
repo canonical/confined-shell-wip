@@ -36,6 +36,9 @@ yambar_config="$SNAP_USER_DATA/.config/yambar/config.yml"
 
 # Ensure we have a config file with the fixed options
 cat <<EOT > "${miriway_config}"
+shell-component=/snap/${SNAP_INSTANCE_NAME}/current/usr/libexec/xdg-desktop-portal-gnome
+shell-component=/snap/${SNAP_INSTANCE_NAME}/current/usr/libexec/xdg-desktop-portal-gtk
+
 shell-ctrl-alt=a:wofi --show drun --location top_left
 shell-meta=a:wofi --show drun --location top_left
 shell-component=wayland-launch swaybg -i /snap/${SNAP_INSTANCE_NAME}/current/usr/share/backgrounds/warty-final-ubuntu.png

@@ -157,6 +157,13 @@ parts:
     plugin: cmake
     source: env
 
+  dbus:
+    plugin: nil
+    stage-packages:
+    - dbus
+    prime:
+    - usr/bin/dbus-update-activation-environment
+
   misc:
     plugin: nil
     stage-packages:
@@ -187,6 +194,7 @@ parts:
       - swaybg
       - icons
       - glue
+      - dbus
       - misc
     source: https://github.com/MirServer/graphics-core22.git
     plugin: dump

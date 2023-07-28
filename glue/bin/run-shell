@@ -36,8 +36,6 @@ yambar_config="$SNAP_USER_DATA/.config/yambar/config.yml"
 
 # Ensure we have a config file with the fixed options
 cat <<EOT > "${miriway_config}"
-shell-component=dbus-update-activation-environment --systemd --verbose WAYLAND_DISPLAY XDG_DATA_DIRS=/usr/local/share:/usr/share:/var/lib/snapd/desktop MOZ_ENABLE_WAYLAND
-
 shell-ctrl-alt=a:wofi --show drun --location top_left
 shell-meta=a:wofi --show drun --location top_left
 shell-component=wayland-launch swaybg -i /snap/${SNAP_INSTANCE_NAME}/current/usr/share/backgrounds/warty-final-ubuntu.png

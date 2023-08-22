@@ -88,7 +88,7 @@ parts:
       - libmiral-dev
       - g++
     stage-packages:
-      - libmiral5
+      - libmiral6
       - mir-graphics-drivers-desktop
       - mir-graphics-drivers-nvidia
     stage:

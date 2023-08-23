@@ -88,6 +88,7 @@ parts:
       craftctl default
       # work around https://github.com/diddlesnaps/snapcraft-multiarch-action/issues/22
       git config --global --add safe.directory ${CRAFT_PART_SRC}
+      git config --global --add safe.directory ${CRAFT_PROJECT_DIR}
       server_version=`git -C ${CRAFT_PART_SRC} rev-list --count HEAD`
       mir_version=$( sed -rne 's/^version:\s+([^-]*)-.+$/\1/p' ${SNAPCRAFT_STAGE}/meta.mir-libs/snap.yaml )
       recipe_version=`git -C ${CRAFT_PROJECT_DIR} rev-list --count HEAD`

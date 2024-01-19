@@ -90,10 +90,15 @@ parts:
       - libmiral-dev
       - g++
     stage-packages:
-      - libmiral6
       - mir-graphics-drivers-desktop
       - mir-graphics-drivers-nvidia
-    stage:
+      # Stage libmiral<n> indirectly as we cannot (since core22) do `try:/else:`
+      - libmiral-dev
+    prime:
+      # Do not prime the `-dev` part of libmiral-dev, we don't need it (just the libmiral<n> dependency)
+      - -usr/include
+      - -usr/lib/*/pkgconfig
+      - -usr/lib/*/libmir*.so
       - -usr/share/wayland-sessions/miriway.desktop
 
   wofi:

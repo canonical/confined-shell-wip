@@ -32,5 +32,5 @@ done
 
 # For DM
 if [ -d "/usr/share/wayland-sessions/" ]
-then sudo cp /snap/confined-shell/current/usr/share/wayland-sessions/confined-shell.desktop /usr/share/wayland-sessions/
+then sudo cp /snap/${SNAP_INSTANCE_NAME}/current/usr/share/wayland-sessions/confined-shell.desktop /usr/share/wayland-sessions/
 fi

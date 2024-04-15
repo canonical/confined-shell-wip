@@ -35,3 +35,9 @@ jobs:
         launchpad-accept-public-upload: true
         publish: ${{ github.event_name == 'pull_request' && github.repository == github.event.pull_request.head.repo.full_name }}
         publish-channel: edge/pr${{ github.event.number }}
+
+    - if: ${{ failure() && runner.debug }}
+      name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
+      with:
+          limit-access-to-actor: true

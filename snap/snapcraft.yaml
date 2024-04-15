@@ -13,8 +13,9 @@ description: |
   
       /snap/confined-shell/current/bin/setup.sh
 confinement: strict
-grade: stable
+grade: devel
 base: core24
+build-base: devel
 
 environment:
   SHELL: bash
@@ -80,7 +81,7 @@ parts:
       git config --global --add safe.directory ${CRAFT_PROJECT_DIR}
       recipe_version=`git -C ${CRAFT_PROJECT_DIR} rev-list --count HEAD`
       craftctl set version=$server_version-mir$mir_version-snap$recipe_version
-      if echo $mir_version | grep -e '+dev' -e '~rc' -q; then craftctl set grade=devel; else craftctl set grade=stable; fi
+      # if echo $mir_version | grep -e '+dev' -e '~rc' -q; then craftctl set grade=devel; else craftctl set grade=stable; fi
     plugin: cmake
     build-packages:
       - build-essential
@@ -206,12 +207,12 @@ plugs:
   gpu-2404:
     interface: content
     target: $SNAP/gpu-2404
-    default-provider: mesa-2404
+    # default-provider: mesa-2404
 
-platforms:
-  amd64:
-  arm64:
-  armhf:
+architectures:
+  - build-on: amd64
+  - build-on: arm64
+  - build-on: armhf
 
 package-repositories:
   - type: apt

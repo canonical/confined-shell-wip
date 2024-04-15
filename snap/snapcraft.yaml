@@ -14,7 +14,7 @@ description: |
       /snap/confined-shell/current/bin/setup.sh
 confinement: strict
 grade: stable
-base: core22
+base: core24
 
 environment:
   SHELL: bash
@@ -26,7 +26,7 @@ environment:
   XDG_CACHE_HOME:  $SNAP_USER_COMMON/.cache
   XDG_CONFIG_HOME: $SNAP_USER_DATA/.config
   # Prep for Mir
-  MIR_SERVER_PLATFORM_PATH: ${SNAP}/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/mir/server-platform
+  MIR_SERVER_PLATFORM_PATH: ${SNAP}/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/mir/server-platform
   # graphics
   LIBINPUT_QUIRKS_DIR:       $SNAP/usr/share/libinput
   # Setup XKB
@@ -39,13 +39,13 @@ layout:
     symlink: $SNAP/usr/bin/xkbcomp
   /usr/share/icons:
     bind: $SNAP/usr/share/icons
-  /usr/lib/$SNAPCRAFT_ARCH_TRIPLET/gdk-pixbuf-2.0:
-    symlink: $SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/gdk-pixbuf-2.0
-  /usr/share/drirc.d:  # Used by mesa-core22 for app specific workarounds
+  /usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/gdk-pixbuf-2.0:
+    symlink: $SNAP/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/gdk-pixbuf-2.0
+  /usr/share/drirc.d:  # Used by mesa-core24 for app specific workarounds
     symlink: $SNAP_COMMON/graphics/usr/share/drirc.d
-  /usr/share/X11/XErrorDB:   # Used by graphics-core22 for X11
+  /usr/share/X11/XErrorDB:   # Used by graphics-core24 for X11
     symlink: $SNAP_COMMON/graphics/usr/share/X11/XErrorDB
-  /usr/share/X11/locale:   # Used by graphics-core22 for X11
+  /usr/share/X11/locale:   # Used by graphics-core24 for X11
     symlink: $SNAP_COMMON/graphics/usr/share/X11/locale
   # these could be avoided through a desktop plug
   /etc/gtk-3.0:
@@ -57,7 +57,7 @@ apps:
   confined-shell:
     command-chain:
       - bin/run-shell
-      - bin/graphics-core22-wrapper
+      - bin/graphics-core24-wrapper
     command: usr/local/bin/miriway
     desktop: usr/share/wayland-sessions/confined-shell.desktop
     slots:
@@ -149,7 +149,6 @@ parts:
       - libpixman-1-0
       - libudev1
       - libwayland-client0
-      - libwayland-cursor0
       - libyaml-0-2
 
   icons:
@@ -169,23 +168,24 @@ parts:
     stage-packages:
     - libgdk-pixbuf2.0-bin # GDK pixbuf
     - libglib2.0-0
+    - libgtk-3-common # GTK schemas
     build-packages:
       - libglib2.0-0
       - libgdk-pixbuf2.0-0
       - librsvg2-dev # So the libpixbufloader-svg.so loader can be loaded by gdk-pixbuf-query-loaders
     override-build: |
-      snapcraftctl build
-      update-mime-database $SNAPCRAFT_PART_INSTALL/usr/share/mime
+      craftctl default
+      update-mime-database $CRAFT_PART_INSTALL/usr/share/mime
     override-prime: |
-      snapcraftctl prime
+      craftctl default
       # Compile the gsettings schemas
-      /usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/glib-2.0/glib-compile-schemas "$SNAPCRAFT_PRIME/usr/share/glib-2.0/schemas"
+      /usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/glib-2.0/glib-compile-schemas "$CRAFT_PRIME/usr/share/glib-2.0/schemas"
       # Index the pixbuf loaders
-      GDK_PIXBUF_MODULEDIR=$SNAPCRAFT_PRIME/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/gdk-pixbuf-2.0/2.10.0/loaders \
-      "/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/gdk-pixbuf-2.0/gdk-pixbuf-query-loaders" > "$SNAPCRAFT_PRIME/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/gdk-pixbuf-2.0/2.10.0/loaders.cache"
-      sed s!$SNAPCRAFT_PRIME!!g --in-place "$SNAPCRAFT_PRIME/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/gdk-pixbuf-2.0/2.10.0/loaders.cache"
+      GDK_PIXBUF_MODULEDIR=$CRAFT_PRIME/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/gdk-pixbuf-2.0/2.10.0/loaders \
+      "/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/gdk-pixbuf-2.0/gdk-pixbuf-query-loaders" > "$CRAFT_PRIME/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/gdk-pixbuf-2.0/2.10.0/loaders.cache"
+      sed s!$CRAFT_PRIME!!g --in-place "$CRAFT_PRIME/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/gdk-pixbuf-2.0/2.10.0/loaders.cache"
 
-  graphics-core22:
+  graphics-core:
     after:
       - miriway
       - env
@@ -195,25 +195,25 @@ parts:
       - icons
       - glue
       - misc
-    source: https://github.com/MirServer/graphics-core22.git
+    source: https://github.com/canonical/graphics-core.git
     plugin: dump
     override-prime: |
       craftctl default
-      ${CRAFT_PART_SRC}/bin/graphics-core22-cleanup mesa-core22
+      ${CRAFT_PART_SRC}/bin/graphics-core24-cleanup mesa-core24
       rm -rf ${CRAFT_PRIME}/{bug,doc,lintian,man}
     prime:
-      - bin/graphics-core22-wrapper
+      - bin/graphics-core24-wrapper
 
 plugs:
-  graphics-core22:
+  graphics-core24:
     interface: content
     target: $SNAP/graphics
-    default-provider: mesa-core22
+    default-provider: mesa-core24
 
-architectures:
-  - build-on: amd64
-  - build-on: arm64
-  - build-on: armhf
+platforms:
+  amd64:
+  arm64:
+  armhf:
 
 package-repositories:
   - type: apt

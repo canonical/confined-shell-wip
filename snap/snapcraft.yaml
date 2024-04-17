@@ -41,12 +41,10 @@ layout:
     bind: $SNAP/usr/share/icons
   /usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/gdk-pixbuf-2.0:
     symlink: $SNAP/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/gdk-pixbuf-2.0
-  /usr/share/drirc.d:  # Used by mesa-core24 for app specific workarounds
-    symlink: $SNAP_COMMON/graphics/usr/share/drirc.d
-  /usr/share/X11/XErrorDB:   # Used by graphics-core24 for X11
-    symlink: $SNAP_COMMON/graphics/usr/share/X11/XErrorDB
-  /usr/share/X11/locale:   # Used by graphics-core24 for X11
-    symlink: $SNAP_COMMON/graphics/usr/share/X11/locale
+  /usr/share/drirc.d:  # Used by mesa-2404 for app specific workarounds
+    symlink: $SNAP_COMMON/gpu-2404/usr/share/drirc.d
+  /usr/share/X11/XErrorDB:   # Used by gpu-2404 for X11
+    symlink: $SNAP_COMMON/gpu-2404/usr/share/X11/XErrorDB
   # these could be avoided through a desktop plug
   /etc/gtk-3.0:
     bind: $SNAP/etc/gtk-3.0
@@ -57,7 +55,7 @@ apps:
   confined-shell:
     command-chain:
       - bin/run-shell
-      - bin/graphics-core24-wrapper
+      - bin/gpu-2404-wrapper
     command: usr/local/bin/miriway
     desktop: usr/share/wayland-sessions/confined-shell.desktop
     slots:
@@ -185,7 +183,7 @@ parts:
       "/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/gdk-pixbuf-2.0/gdk-pixbuf-query-loaders" > "$CRAFT_PRIME/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/gdk-pixbuf-2.0/2.10.0/loaders.cache"
       sed s!$CRAFT_PRIME!!g --in-place "$CRAFT_PRIME/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/gdk-pixbuf-2.0/2.10.0/loaders.cache"
 
-  graphics-core:
+  gpu-snap:
     after:
       - miriway
       - env
@@ -195,20 +193,20 @@ parts:
       - icons
       - glue
       - misc
-    source: https://github.com/canonical/graphics-core.git
+    source: https://github.com/canonical/gpu-snap.git
     plugin: dump
     override-prime: |
       craftctl default
-      ${CRAFT_PART_SRC}/bin/graphics-core24-cleanup mesa-core24
+      ${CRAFT_PART_SRC}/bin/gpu-2404-cleanup mesa-2404
       rm -rf ${CRAFT_PRIME}/{bug,doc,lintian,man}
     prime:
-      - bin/graphics-core24-wrapper
+      - bin/gpu-2404-wrapper
 
 plugs:
-  graphics-core24:
+  gpu-2404:
     interface: content
-    target: $SNAP/graphics
-    default-provider: mesa-core24
+    target: $SNAP/gpu-2404
+    default-provider: mesa-2404
 
 platforms:
   amd64:

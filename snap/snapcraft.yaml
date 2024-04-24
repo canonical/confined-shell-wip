@@ -141,9 +141,9 @@ parts:
       - fonts-font-awesome
       - fonts-ubuntu
       - libasound2
-      - libfcft4
+      - libfcft4t64
       - libjson-c5
-      - libmpdclient2
+      - libmpdclient2t64
       - libpixman-1-0
       - libudev1
       - libwayland-client0
@@ -165,10 +165,10 @@ parts:
     plugin: nil
     stage-packages:
     - libgdk-pixbuf2.0-bin # GDK pixbuf
-    - libglib2.0-0
+    - libglib2.0-0t64
     - libgtk-3-common # GTK schemas
     build-packages:
-      - libglib2.0-0
+      - libglib2.0-0t64
       - libgdk-pixbuf2.0-0
       - librsvg2-dev # So the libpixbufloader-svg.so loader can be loaded by gdk-pixbuf-query-loaders
     override-build: |

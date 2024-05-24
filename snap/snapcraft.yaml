@@ -167,6 +167,7 @@ parts:
     - libgdk-pixbuf2.0-bin # GDK pixbuf
     - libglib2.0-0t64
     - libgtk-3-common # GTK schemas
+    - xkb-data
     build-packages:
       - libglib2.0-0t64
       - libgdk-pixbuf2.0-0

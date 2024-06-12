@@ -140,7 +140,7 @@ parts:
     stage-packages:
       - fonts-font-awesome
       - fonts-ubuntu
-      - libasound2
+      - libasound2t64
       - libfcft4t64
       - libjson-c5
       - libmpdclient2t64

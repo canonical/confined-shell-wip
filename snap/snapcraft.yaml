@@ -111,44 +111,9 @@ parts:
       - ubuntu-wallpapers
 
   yambar:
-    plugin: meson
-    meson-parameters:
-      - -Dbackend-x11=disabled
-      - -Dbackend-wayland=enabled
-    build-packages:
-      - meson
-      - ninja-build
-      - wayland-protocols
-      - libasound2-dev
-      - libfcft-dev
-      - libfontconfig-dev
-      - libharfbuzz-dev
-      - libinotifytools0-dev
-      - libjson-c-dev
-      - libmpdclient-dev
-      - libpixman-1-dev
-      - libtllist-dev
-      - libudev-dev
-      - libwayland-dev
-      - libyaml-dev
-      - scdoc
-      - flex
-      - bison
-    source: https://git.launchpad.net/ubuntu/+source/yambar
-    source-type: git
-    source-branch: applied/ubuntu/noble-devel
-    source-depth: 1
+    plugin: nil
     stage-packages:
-      - fonts-font-awesome
-      - fonts-ubuntu
-      - libasound2t64
-      - libfcft4t64
-      - libjson-c5
-      - libmpdclient2t64
-      - libpixman-1-0
-      - libudev1
-      - libwayland-client0
-      - libyaml-0-2
+      - yambar
 
   icons:
     plugin: nil

@@ -134,8 +134,9 @@ parts:
       - scdoc
       - flex
       - bison
-    source: https://codeberg.org/dnkl/yambar.git
-    source-tag: 1.9.0
+    source: https://git.launchpad.net/ubuntu/+source/yambar
+    source-type: git
+    source-branch: applied/ubuntu/noble-devel
     source-depth: 1
     stage-packages:
       - fonts-font-awesome

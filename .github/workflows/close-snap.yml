@@ -15,5 +15,6 @@ jobs:
       uses: canonical/actions/close-snap@release
       continue-on-error: true
       with:
+        name: confined-shell
         channel: edge/pr${{ github.event.number }}
         snapcraft-token: ${{ secrets.SNAPCRAFT_TOKEN }}

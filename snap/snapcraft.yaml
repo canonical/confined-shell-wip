@@ -68,6 +68,7 @@ apps:
       - x11
     environment:
       XDG_DATA_DIRS: $SNAP/usr/share:/var/lib/snapd/desktop
+      LD_LIBRARY_PATH: $LD_LIBRARY_PATH:${SNAP}/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/pulseaudio
 
 parts:
   miriway:
@@ -114,7 +115,7 @@ parts:
     plugin: nil
     stage-packages:
       - yambar
-
+      - fonts-font-awesome
   icons:
     plugin: nil
     stage-packages: [dmz-cursor-theme]

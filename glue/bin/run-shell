@@ -41,6 +41,7 @@ shell-meta=a:wofi --show drun --location top_left
 shell-component=wayland-launch swaybg -i /snap/${SNAP_INSTANCE_NAME}/current/usr/share/backgrounds/warty-final-ubuntu.png
 shell-component=wayland-launch yambar
 app-env-amend=XCURSOR_THEME=DMZ-White
+cursor-theme=DMZ-White
 
 meta=Left:@dock-left
 meta=Right:@dock-right

@@ -168,5 +168,5 @@ done
 
 cd "$HOME"
 
-exec $@
+exec "$@"
 

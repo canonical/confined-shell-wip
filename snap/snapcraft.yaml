@@ -86,7 +86,9 @@ parts:
     build-packages:
       - build-essential
       - pkg-config
+      - libboost-dev
       - libmiral-dev
+      - libmirwayland-dev
       - g++
     stage-packages:
       - mir-graphics-drivers-desktop

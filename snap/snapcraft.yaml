@@ -14,7 +14,7 @@ description: |
       /snap/confined-shell/current/bin/setup.sh
 confinement: strict
 grade: stable
-base: core24
+base: core26
 
 environment:
   SHELL: bash
@@ -41,10 +41,8 @@ layout:
     bind: $SNAP/usr/share/icons
   /usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/gdk-pixbuf-2.0:
     symlink: $SNAP/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/gdk-pixbuf-2.0
-  /usr/share/drirc.d:  # Used by mesa-2404 for app specific workarounds
-    symlink: $SNAP_COMMON/gpu-2404/usr/share/drirc.d
-  /usr/share/X11/XErrorDB:   # Used by gpu-2404 for X11
-    symlink: $SNAP_COMMON/gpu-2404/usr/share/X11/XErrorDB
+  /usr/share/X11/XErrorDB:   # Used by gpu-2604 for X11
+    symlink: $SNAP_COMMON/gpu-2604/usr/share/X11/XErrorDB
   # these could be avoided through a desktop plug
   /etc/gtk-3.0:
     bind: $SNAP/etc/gtk-3.0
@@ -54,8 +52,8 @@ layout:
 apps:
   confined-shell:
     command-chain:
-      - bin/run-shell
-      - bin/gpu-2404-wrapper
+      - usr/local/bin/run-shell
+      - usr/local/bin/gpu-2604-wrapper
     command: usr/local/bin/miriway
     desktop: usr/share/wayland-sessions/confined-shell.desktop
     slots:
@@ -126,6 +124,8 @@ parts:
   glue:
     plugin: dump
     source: glue
+    organize:
+      bin: usr/local/bin
 
   env:
     plugin: cmake
@@ -134,13 +134,19 @@ parts:
   misc:
     plugin: nil
     stage-packages:
-    - libgdk-pixbuf2.0-bin # GDK pixbuf
+    - libgdk-pixbuf-2.0-0 # GDK pixbuf
     - libglib2.0-0t64
     - libgtk-3-common # GTK schemas
     - xkb-data
+    # pixbuf loaders
+    - libavif-gdk-pixbuf
+    - heif-gdk-pixbuf
+    - libjxl-gdk-pixbuf
+    - librsvg2-common
+    - webp-pixbuf-loader
     build-packages:
       - libglib2.0-0t64
-      - libgdk-pixbuf2.0-0
+      - libgdk-pixbuf-2.0-0
       - librsvg2-dev # So the libpixbufloader-svg.so loader can be loaded by gdk-pixbuf-query-loaders
     override-build: |
       craftctl default
@@ -168,16 +174,18 @@ parts:
     plugin: dump
     override-prime: |
       craftctl default
-      ${CRAFT_PART_SRC}/bin/gpu-2404-cleanup mesa-2404
+      ${CRAFT_PART_SRC}/bin/gpu-2604-cleanup mesa-2604
       rm -rf ${CRAFT_PRIME}/{bug,doc,lintian,man}
+    organize:
+      bin: usr/local/bin
     prime:
-      - bin/gpu-2404-wrapper
+      - usr/local/bin/gpu-2604-wrapper
 
 plugs:
-  gpu-2404:
+  gpu-2604:
     interface: content
-    target: $SNAP/gpu-2404
-    default-provider: mesa-2404
+    target: $SNAP/gpu-2604
+    default-provider: mesa-2604
 
 platforms:
   amd64:

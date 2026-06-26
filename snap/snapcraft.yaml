@@ -41,8 +41,6 @@ layout:
     bind: $SNAP/usr/share/icons
   /usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/gdk-pixbuf-2.0:
     symlink: $SNAP/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/gdk-pixbuf-2.0
-  /usr/share/X11/XErrorDB:   # Used by gpu-2604 for X11
-    symlink: $SNAP_COMMON/gpu-2604/usr/share/X11/XErrorDB
   # these could be avoided through a desktop plug
   /etc/gtk-3.0:
     bind: $SNAP/etc/gtk-3.0
